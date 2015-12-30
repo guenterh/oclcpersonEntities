@@ -1,5 +1,6 @@
 package org.swissbib.linked.oclc.entities;
 
+/*
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -19,10 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
-
+*/
 /**
  * Created by swissbib on 12/29/15.
  */
+
+
+/*
+
 public class ScanPersonES1 extends ScanPerson {
 
     private TransportClient client;
@@ -38,17 +43,6 @@ public class ScanPersonES1 extends ScanPerson {
         this.client = new TransportClient(settings);
         client.addTransportAddress(new InetSocketTransportAddress(this.host,this.port));
 
-
-
-
-        /*
-        SearchResponse response = client.prepareSearch("testsb")
-                .setTypes("person")
-                .execute()
-                .actionGet();
-
-        client.close();
-        */
 
 
     }
@@ -88,18 +82,6 @@ public class ScanPersonES1 extends ScanPerson {
 
                 String personId =  sourcemap.containsKey("@id") ? (String) sourcemap.get("@id") : null;
                 if (null != personId) {
-                    //QueryBuilder q =  QueryBuilders.("dc:contributor.foaf:Person", QueryBuilders.matchQuery("@id", personId));
-                    /*
-                    SearchResponse nestedPerson = client.prepareSearch("testsb")
-                            .setTypes("bibliographicResource")
-                            //.setSearchType(SearchType.)
-                            //.setScroll(new TimeValue(60000))
-                            .setQuery(q)
-                            .setSize(1000).execute().actionGet(); //100 hits per shard will be returned for each scroll
-
-                    long allBooksFromPerson =  nestedPerson.getHits().getTotalHits();
-                    System.out.println(allBooksFromPerson);
-                    */
 
                 }
 
@@ -138,3 +120,4 @@ public class ScanPersonES1 extends ScanPerson {
 
 
 }
+*/

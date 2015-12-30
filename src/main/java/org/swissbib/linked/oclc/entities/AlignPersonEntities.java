@@ -7,7 +7,6 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 //import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.client.transport.support.InternalTransportAdminClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
@@ -49,12 +48,12 @@ public class AlignPersonEntities {
                 System.exit(1);
             }
         }else {
-            System.out.println(String.format("Three args are necessary: HOST: %s, PORT: %s, CLUSTERNAME: %s  ","?", "?", "?")  );
+            System.out.println(String.format("Three args are necessary: HOST: %s, PORT: %s, CLUSTERNAME: %s,  KEY: %s","?", "?", "?", "?")  );
             System.exit(0);
         }
 
 
-
+        /*
         ScanPersonES1 personES1 = new ScanPersonES1();
         personES1.init(host, port, clusterName);
 
@@ -62,8 +61,12 @@ public class AlignPersonEntities {
 
         personES1.disconnectFromCluster();
 
+        */
 
 
+        ScanPersonES2 personES2 = new ScanPersonES2();
+        personES2.init(host,port,clusterName);
+        personES2.disconnectFromCluster();
 
     }
 
