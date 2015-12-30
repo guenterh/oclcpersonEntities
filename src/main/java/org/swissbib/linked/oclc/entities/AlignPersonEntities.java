@@ -68,6 +68,8 @@ public class AlignPersonEntities {
         personES2.init(host,port,clusterName);
         personES2.disconnectFromCluster();
 
+        System.out.println("alles ok");
+
     }
 
     public static void startOCLCSearch (String query, String key) {
