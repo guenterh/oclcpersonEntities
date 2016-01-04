@@ -23,7 +23,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 /**
  * Created by swissbib on 12/29/15.
  */
-public class ScanPersonES1 extends ScanPerson {
+public class ScanPersonES1  extends ScanPerson {
 
     private TransportClient client;
 
@@ -37,19 +37,6 @@ public class ScanPersonES1 extends ScanPerson {
 
         this.client = new TransportClient(settings);
         client.addTransportAddress(new InetSocketTransportAddress(this.host,this.port));
-
-
-
-
-        /*
-        SearchResponse response = client.prepareSearch("testsb")
-                .setTypes("person")
-                .execute()
-                .actionGet();
-
-        client.close();
-        */
-
 
     }
 
@@ -78,32 +65,50 @@ public class ScanPersonES1 extends ScanPerson {
         long sum = 0;
         while (true) {
             long i = 0;
-            for (SearchHit hit : scrollResp.getHits().getHits()) {
+            for (SearchHit personHit : scrollResp.getHits().getHits()) {
 
                 i++;
 
-                String id = hit.getId();
-                Map<String, SearchHitField> fields = hit.getFields();
-                Map<String, Object> sourcemap =  hit.getSource();
+                String docIdPerson = personHit.getId();
+                Map<String, SearchHitField> fields = personHit.getFields();
+                Map<String, Object> sourcemapPerson =  personHit.getSource();
 
-                String personId =  sourcemap.containsKey("@id") ? (String) sourcemap.get("@id") : null;
+                String personId =  sourcemapPerson.containsKey("@id") ? (String) sourcemapPerson.get("@id") : null;
                 if (null != personId) {
-                    //QueryBuilder q =  QueryBuilders.("dc:contributor.foaf:Person", QueryBuilders.matchQuery("@id", personId));
-                    /*
-                    SearchResponse nestedPerson = client.prepareSearch("testsb")
+                    String qOclcApi = null;
+                    if (sourcemapPerson.containsKey("rdfs:label")) {
+                        qOclcApi = (String)sourcemapPerson.get("rdfs:label");
+                        String response = this.api.executeSearch(qOclcApi);
+                        System.out.println(response);
+
+                    }
+
+
+
+                    QueryBuilder q =  QueryBuilders.matchQuery("dc:contributor.foaf:Person.@id", personId);
+
+                    SearchResponse bibResourcesOfCurrentPerson = client.prepareSearch("testsb")
                             .setTypes("bibliographicResource")
                             //.setSearchType(SearchType.)
                             //.setScroll(new TimeValue(60000))
                             .setQuery(q)
                             .setSize(1000).execute().actionGet(); //100 hits per shard will be returned for each scroll
 
-                    long allBooksFromPerson =  nestedPerson.getHits().getTotalHits();
-                    System.out.println(allBooksFromPerson);
-                    */
+                    long allBooksFromPerson =  bibResourcesOfCurrentPerson.getHits().getTotalHits();
+
+                    for (SearchHit bibResource : bibResourcesOfCurrentPerson.getHits().getHits()) {
+                            //String response = this.api.executeSearch(qOclcApi);
+                            System.out.println(bibResource.getSourceAsString());
+
+                    }
+
+                    //innerPerson.
+                    //System.out.println(allBooksFromPerson);
+
 
                 }
 
-                System.out.println(hit.getSourceAsString());
+                //System.out.println(hit.getSourceAsString());
 
                 //String personIdentifier = hit.field("@id").getValue();
                 //System.out.println(personIdentifier);

@@ -1,20 +1,9 @@
 package org.swissbib.linked.oclc.entities;
 
-import com.google.common.io.CharStreams;
-import com.google.common.net.UrlEscapers;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 //import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.client.transport.support.InternalTransportAdminClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.*;
+import java.io.*;
+        import java.util.Properties;
 
 /**
  * Created by swissbib on 12/28/15.
@@ -33,84 +22,76 @@ public class AlignPersonEntities {
 
     public static void main (String[] args) {
 
-        String host = null;
-        Integer port = null;
-        String clusterName = null;
-        String oclcKey = null;
 
-        if (args.length == 4) {
-            try {
-                host = args[0];
-                port = Integer.parseInt(args[1]);
-                clusterName = args[2];
-                oclcKey = args[3];
-            } catch (NumberFormatException e) {
-                System.err.println("Argument" + args[0] + " must be an integer.");
-                System.exit(1);
-            }
-        }else {
-            System.out.println(String.format("Three args are necessary: HOST: %s, PORT: %s, CLUSTERNAME: %s  ","?", "?", "?")  );
-            System.exit(0);
+        Properties props = System.getProperties();
+        if (!props.containsKey("configFile")) {
+            System.err.println("missing property configFile");
+            System.exit(1);
         }
 
-
-
-        ScanPersonES1 personES1 = new ScanPersonES1();
-        personES1.init(host, port, clusterName);
-
-        personES1.openScan();
-
-        personES1.disconnectFromCluster();
-
-
-
-
-    }
-
-    public static void startOCLCSearch (String query, String key) {
-
-        /*
-        startOCLCSearch("Mario Cuenca Sandoval",key);
-        startOCLCSearch("Cuenca Sandoval, Mario", key);
-        startOCLCSearch("martin walser", key);
-
-        /*
-
-
-
-        String urlToUse = String.format(oclcURL,query,key);
-        HttpURLConnection uc = null;
         try {
+            File configFile = new File((String) props.get("configFile"));
+            FileInputStream fi = new FileInputStream(configFile);
+            Properties configProps = new Properties();
+            configProps.load(fi);
 
-            urlToUse = UrlEscapers.urlFragmentEscaper().escape(urlToUse);
-            URL u = new URL(urlToUse);
-            uc = (HttpURLConnection)u.openConnection();
+            if (!checkProperties(configProps)) {
 
-            uc.setRequestMethod("GET");
-            //uc.setRequestProperty("ACCEPT", "application/ld+json");
-            uc.setRequestProperty("ACCEPT", "application/json");
-            uc.connect();
-            InputStream contentStream = (InputStream) uc.getContent();
-
-            //String oclcResponse = CharStreams.toString( new InputStreamReader( contentStream, "UTF-8" ) );
-            String oclcResponse = CharStreams.toString( new InputStreamReader( contentStream ) );
-
-            System.out.println(oclcResponse);
+                System.err.println("properties not correct");
+                System.exit(1);
+            }
 
 
+            OCLCPersonEntityAPI oclcAPI = new OCLCPersonEntityAPI(configProps.getProperty("oclcKey"),
+                    configProps.getProperty("oclcRequestURL"));
 
-            contentStream.close();
-            uc.disconnect();
+            ScanPersonES1 personES1 = new ScanPersonES1();
+            personES1.setAPI(oclcAPI);
+
+            personES1.init(configProps.getProperty("hostES"),
+                    Integer.valueOf(configProps.getProperty("portES")),
+                    configProps.getProperty("clusterName"));
+
+            MongoDBWrapper mDB = null;
+
+            if (configProps.containsKey("mongoUser") && configProps.containsKey("mongoPassword")) {
+                mDB = new MongoDBWrapper(configProps.getProperty("hostMongo"),
+                        configProps.getProperty("portMongo"),
+                        configProps.getProperty("mongoDataDB"),
+                        configProps.getProperty("mongoDataCollection"),
+                        configProps.getProperty("mongoAuthDB"),
+                        configProps.getProperty("mongoUser"),
+                        configProps.getProperty("mongoPassword"));
+            } else {
+
+                mDB = new MongoDBWrapper(configProps.getProperty("hostMongo"),
+                        configProps.getProperty("portMongo"),
+                        configProps.getProperty("mongoDataDB"),
+                        configProps.getProperty("mongoDataCollection"),
+                        configProps.getProperty("mongoAuthDB"));
+            }
+
+            personES1.setMongoWrapper(mDB);
+
+            personES1.openScan();
+
+            personES1.disconnectFromCluster();
 
 
-        } catch (IOException ioException) {
+
+
+
+        } catch (IOException ioException ) {
+
             ioException.printStackTrace();
         }
 
 
 
 
+
     }
+
 
 
 
@@ -144,6 +125,23 @@ public class AlignPersonEntities {
         }
 
         */
+
+    }
+
+
+    private static boolean checkProperties(Properties props) {
+
+        String[] manProps = new String[] {"hostES","portES","clusterName", "oclcKey", "hostMongo", "portMongo",
+        "mongoDataDB", "mongoAuthDB", "mongoDataCollection", "oclcRequestURL", "oclcIDURL" };
+
+        for (String prop: manProps) {
+            if (!props.containsKey(prop)) {
+                System.err.println("property " + prop + " is missing");
+                return false;
+            }
+        }
+
+        return true;
 
     }
 
