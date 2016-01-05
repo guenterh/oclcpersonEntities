@@ -15,8 +15,7 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 
@@ -51,23 +50,26 @@ public class ScanPersonES1  extends ScanPerson {
     public void openScan () {
 
 
-        QueryBuilder qb = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("type", "Person"));
+        ExistsFilterBuilder filter=FilterBuilders.existsFilter("dbp:birthYear");
+        //QueryBuilder qb = QueryBuilders.filteredQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("type", "Person")),filter);
+        QueryBuilder qb = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(),filter);
+        //QueryBuilder qb = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("type", "Person"));
 
 
-        qb =  QueryBuilders.matchAllQuery();
-
+        //qb =  QueryBuilders.matchAllQuery();
 
         SearchResponse scrollResp = client.prepareSearch("testsb")
                 .setTypes("person")
                 .setSearchType(SearchType.SCAN)
                 .setScroll(new TimeValue(60000))
+
                 .setQuery(qb)
                 .setSize(100).execute().actionGet(); //100 hits per shard will be returned for each scroll
         //Scroll until no hits are returned
-        //long anzahl = scrollResp.getHits().getTotalHits();
+        long anzahl = scrollResp.getHits().getTotalHits();
 
         scrollResp = client.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
-
+        boolean personWithBirthYear = true;
 
         long sum = 0;
         while (true) {
@@ -85,9 +87,12 @@ public class ScanPersonES1  extends ScanPerson {
                 String personId =  sourcemapPerson.containsKey("@id") ? (String) sourcemapPerson.get("@id") : null;
                 if (null != personId) {
                     String qOclcApi = null;
-                    if (sourcemapPerson.containsKey("rdfs:label")) {
-                        qOclcApi = (String)sourcemapPerson.get("rdfs:label");
-                        String response = this.api.executeSearch(qOclcApi,OCLCQueryType.termLookUp);
+
+                    String qTerm = this.prepareQuery(sourcemapPerson,personWithBirthYear);
+
+                    if (qTerm.length() > 0) {
+                        //qOclcApi = (String)sourcemapPerson.get("rdfs:label");
+                        String response = this.api.executeSearch(qTerm,OCLCQueryType.termLookUp);
 
                         Document oclcTermQueryMongoDoc =  mongoDocBuilder.jsonToDocument(response);
 

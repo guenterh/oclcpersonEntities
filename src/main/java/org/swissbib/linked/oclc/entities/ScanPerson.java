@@ -1,5 +1,6 @@
 package org.swissbib.linked.oclc.entities;
 
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -59,6 +60,25 @@ public abstract class ScanPerson  {
 
     protected abstract void disconnectFromCluster();
 
+    protected String prepareQuery (Map<String, Object> sourceMap, boolean personWithBirthYear) {
+        StringBuilder queryTerm = new StringBuilder();
 
+        if (personWithBirthYear) {
+            if (sourceMap.containsKey("foaf:lastName") && sourceMap.containsKey("foaf:firstName")) {
+                queryTerm.append((String) sourceMap.get("foaf:lastName")).append(" ").append((String) sourceMap.get("foaf:firstName"));
+            } else if (sourceMap.containsKey("foaf:lastName")) {
+                queryTerm.append((String) sourceMap.get("foaf:lastName"));
+            } else if (sourceMap.containsKey("foaf:firstName")) {
+                queryTerm.append((String) sourceMap.get("foaf:firstName"));
+            }
+
+        } else if (sourceMap.containsKey("rdfs:label")) {
+            queryTerm.append((String) sourceMap.get("rdfs:label"));
+        }
+
+        return queryTerm.toString();
+
+
+    }
 
 }
