@@ -1,5 +1,7 @@
 package org.swissbib.linked.oclc.entities;
 
+import java.util.Properties;
+
 /**
  * Created by swissbib on 12/29/15.
  */
@@ -34,6 +36,17 @@ public abstract class ScanPerson  {
         this.clustername = clustername;
         this.connectToCluster();
     }
+
+    public final void init (Properties configProps) {
+
+        this.init(configProps.getProperty("hostES"),
+                Integer.valueOf(configProps.getProperty("portES")),
+                configProps.getProperty("clusterName"));
+
+
+    }
+
+
 
     public void setAPI (APISearch api) {
         this.api = api;

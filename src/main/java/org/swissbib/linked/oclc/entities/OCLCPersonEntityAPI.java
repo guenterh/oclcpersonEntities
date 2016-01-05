@@ -9,12 +9,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+
+
+
 /**
  * Created by swissbib on 1/4/16.
  */
 public class OCLCPersonEntityAPI implements APISearch {
 
-    private String apiURL = "http://experiment.worldcat.org/entity/lookup/?q=%s&wskey=%s";
+
+
+    private String apiQueryURL = "http://experiment.worldcat.org/entity/lookup/?q=%s&wskey=%s";
+    private String apiIdURL = "http://experiment.worldcat.org/entity/lookup/?id=%s&wskey=%s";
     private String apiKey = null;
 
     public OCLCPersonEntityAPI(String key) {
@@ -22,15 +28,16 @@ public class OCLCPersonEntityAPI implements APISearch {
     }
 
 
-    public OCLCPersonEntityAPI(String key, String apiURL) {
+    public OCLCPersonEntityAPI(String key, String queryURL, String idURL) {
         this.apiKey = key;
-        this.apiURL = apiURL;
+        this.apiQueryURL = queryURL;
+        this.apiIdURL = idURL;
     }
 
 
 
 
-    public String executeSearch(String query) {
+    public String executeSearch(String query, OCLCQueryType type) {
         /*
         startOCLCSearch("Mario Cuenca Sandoval",key);
         startOCLCSearch("Cuenca Sandoval, Mario", key);
@@ -40,7 +47,10 @@ public class OCLCPersonEntityAPI implements APISearch {
 
         String oclcResponse = null;
 
-        String urlToUse = String.format(this.apiURL,query,this.apiKey);
+        String urlToUse = type == OCLCQueryType.termLookUp ?
+                String.format(this.apiQueryURL,query,this.apiKey):
+                String.format(this.apiIdURL,query,this.apiKey);
+
         HttpURLConnection uc = null;
         try {
 
@@ -50,7 +60,11 @@ public class OCLCPersonEntityAPI implements APISearch {
 
             uc.setRequestMethod("GET");
             //uc.setRequestProperty("ACCEPT", "application/ld+json");
-            uc.setRequestProperty("ACCEPT", "application/json");
+            if (type == OCLCQueryType.termLookUp) {
+                uc.setRequestProperty("ACCEPT", "application/json");
+            } else {
+                uc.setRequestProperty("ACCEPT","application/ld+json");
+            }
             uc.connect();
             InputStream contentStream = (InputStream) uc.getContent();
 

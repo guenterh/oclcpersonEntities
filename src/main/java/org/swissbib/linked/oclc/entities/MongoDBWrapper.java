@@ -4,6 +4,7 @@ import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import org.bson.BasicBSONObject;
 import org.bson.Document;
 
 import java.util.Arrays;
@@ -94,7 +95,10 @@ public class MongoDBWrapper {
 
     }
 
+    public void writeToDB (Document objectsToSerialize) {
 
+        this.dbDataCollection.insertOne(objectsToSerialize);
 
+    }
 
 }

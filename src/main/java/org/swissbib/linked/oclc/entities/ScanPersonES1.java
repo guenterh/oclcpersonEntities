@@ -1,5 +1,10 @@
 package org.swissbib.linked.oclc.entities;
 
+import com.mongodb.DBObject;
+import org.bson.BasicBSONObject;
+import org.bson.Document;
+import org.bson.types.BasicBSONList;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -15,7 +20,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -68,9 +75,11 @@ public class ScanPersonES1  extends ScanPerson {
             for (SearchHit personHit : scrollResp.getHits().getHits()) {
 
                 i++;
+                MongoDocumentBuilder mongoDocBuilder = new MongoDocumentBuilder();
+                Document personMongoDoc =  mongoDocBuilder.jsonToDocument(personHit.getSourceAsString());
 
-                String docIdPerson = personHit.getId();
-                Map<String, SearchHitField> fields = personHit.getFields();
+                //String docIdPerson = personHit.getId();
+                //Map<String, SearchHitField> fields = personHit.getFields();
                 Map<String, Object> sourcemapPerson =  personHit.getSource();
 
                 String personId =  sourcemapPerson.containsKey("@id") ? (String) sourcemapPerson.get("@id") : null;
@@ -78,58 +87,80 @@ public class ScanPersonES1  extends ScanPerson {
                     String qOclcApi = null;
                     if (sourcemapPerson.containsKey("rdfs:label")) {
                         qOclcApi = (String)sourcemapPerson.get("rdfs:label");
-                        String response = this.api.executeSearch(qOclcApi);
-                        System.out.println(response);
+                        String response = this.api.executeSearch(qOclcApi,OCLCQueryType.termLookUp);
 
-                    }
+                        Document oclcTermQueryMongoDoc =  mongoDocBuilder.jsonToDocument(response);
+
+                        ArrayList<Document> resultList = (ArrayList<Document>) oclcTermQueryMongoDoc.get("result");
 
 
+                        if (null != resultList) {
+                            for (Document itemDoc : resultList) {
+                                if (null != itemDoc.getString("uri")) {
 
-                    QueryBuilder q =  QueryBuilders.matchQuery("dc:contributor.foaf:Person.@id", personId);
+                                    String oclcPersonID = itemDoc.getString("uri");
 
-                    SearchResponse bibResourcesOfCurrentPerson = client.prepareSearch("testsb")
-                            .setTypes("bibliographicResource")
-                            //.setSearchType(SearchType.)
-                            //.setScroll(new TimeValue(60000))
-                            .setQuery(q)
-                            .setSize(1000).execute().actionGet(); //100 hits per shard will be returned for each scroll
+                                    String additionalIds = this.api.executeSearch(oclcPersonID, OCLCQueryType.idLookUp);
+                                    if (null != additionalIds) {
+                                        Document bbAddIds = mongoDocBuilder.jsonToDocument(additionalIds);
+                                        itemDoc.put("additionalIds", bbAddIds);
+                                    }
+                                }
+                            }
 
-                    long allBooksFromPerson =  bibResourcesOfCurrentPerson.getHits().getTotalHits();
+                        }
+                        personMongoDoc.append("oclcMappings",oclcTermQueryMongoDoc);
 
-                    for (SearchHit bibResource : bibResourcesOfCurrentPerson.getHits().getHits()) {
+
+                        QueryBuilder q =  QueryBuilders.matchQuery("dc:contributor.foaf:Person.@id", personId);
+
+                        SearchResponse bibResourcesOfCurrentPerson = client.prepareSearch("testsb")
+                                .setTypes("bibliographicResource")
+                                //.setSearchType(SearchType.)
+                                //.setScroll(new TimeValue(60000))
+                                .setQuery(q)
+                                .setSize(1000).execute().actionGet(); //100 hits per shard will be returned for each scroll
+
+                        ArrayList<Document> listResources = new ArrayList<>();
+
+                        for (SearchHit bibResource : bibResourcesOfCurrentPerson.getHits().getHits()) {
                             //String response = this.api.executeSearch(qOclcApi);
-                            System.out.println(bibResource.getSourceAsString());
+                            Document bibDocument = mongoDocBuilder.jsonToDocument(bibResource.getSourceAsString());
 
+                            String bibId = bibResource.getId();
+
+
+                            GetResponse getResponse = client.prepareGet("testsb", "document", bibId)
+                                    .execute()
+                                    .actionGet();
+
+
+                            if (null != getResponse.getSourceAsString()) {
+                                bibDocument.append("docForBib", mongoDocBuilder.jsonToDocument(getResponse.getSourceAsString()));
+                            }
+                            listResources.add(bibDocument);
+
+
+                        }
+
+
+                        personMongoDoc.append("relatedBibResources",listResources);
+
+                        this.mongoDBWrapper.writeToDB(personMongoDoc);
                     }
-
-                    //innerPerson.
-                    //System.out.println(allBooksFromPerson);
-
 
                 }
 
-                //System.out.println(hit.getSourceAsString());
-
-                //String personIdentifier = hit.field("@id").getValue();
-                //System.out.println(personIdentifier);
-                //String source = hit.getSourceAsString();
-                //System.out.println(source);
-
-                //Handle the hit...
             }
-
             sum += i;
 
             scrollResp = client.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
-            //Break condition: No hits are returned
             if (scrollResp.getHits().getHits().length == 0) {
                 break;
             }
         }
 
         System.out.println(sum);
-
-
 
     }
 

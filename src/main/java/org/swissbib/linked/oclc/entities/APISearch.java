@@ -5,6 +5,6 @@ package org.swissbib.linked.oclc.entities;
  */
 public interface APISearch {
 
-    public String executeSearch (String query);
+    public String executeSearch (String query, OCLCQueryType type);
 
 }

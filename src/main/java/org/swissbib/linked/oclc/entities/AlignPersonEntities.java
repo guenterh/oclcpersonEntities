@@ -43,7 +43,7 @@ public class AlignPersonEntities {
 
 
             OCLCPersonEntityAPI oclcAPI = new OCLCPersonEntityAPI(configProps.getProperty("oclcKey"),
-                    configProps.getProperty("oclcRequestURL"));
+                    configProps.getProperty("oclcRequestURL"), configProps.getProperty("oclcIDURL"));
 
             ScanPersonES1 personES1 = new ScanPersonES1();
             personES1.setAPI(oclcAPI);
