@@ -1,0 +1,2 @@
+start client
+nohup java -cp align-oclc-person-entity-0.5-SNAPSHOT-jar-with-dependencies.jar -DconfigFile=/usr/local/swissbib/bin/config/config.properties org.swissbib.linked.oclc.entities.AlignPersonEntities > fetch.oclc.api.log 2>&1  &

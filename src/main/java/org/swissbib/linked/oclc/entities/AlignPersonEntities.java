@@ -1,14 +1,8 @@
 package org.swissbib.linked.oclc.entities;
 
-//import org.elasticsearch.common.settings.ImmutableSettings;
 
 import java.io.*;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by swissbib on 12/28/15.
@@ -17,16 +11,7 @@ public class AlignPersonEntities {
 
 
 
-    //Json: https://github.com/google/gson/blob/master/UserGuide.md
-    //https://github.com/google/gson
-    //http://mvnrepository.com/artifact/com.google.code.gson/gson/2.5
-
-
-    //private static String oclcURL = "http://experiment.worldcat.org/entity/lookup/?q=%s&wskey=%s&size=100";
-    private static String oclcURL = "http://experiment.worldcat.org/entity/lookup/?q=%s&wskey=%s";
-
     public static void main (String[] args) {
-
 
         Properties props = System.getProperties();
         if (!props.containsKey("configFile")) {

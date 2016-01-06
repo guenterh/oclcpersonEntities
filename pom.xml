@@ -8,6 +8,12 @@
     <artifactId>align-oclc-person-entity</artifactId>
     <version>0.5-SNAPSHOT</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <targetJdk>1.8</targetJdk>
+    </properties>
+
+
     <build>
         <plugins>
             <plugin>

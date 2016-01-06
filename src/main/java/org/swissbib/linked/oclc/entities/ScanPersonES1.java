@@ -77,11 +77,21 @@ public class ScanPersonES1  extends ScanPerson {
         boolean personWithBirthYear = true;
 
         long sum = 0;
-        while (true) {
-            long i = 0;
+        long numberRequestsAgainstAPI = null != this.configProperties &&
+                this.configProperties.containsKey("totalNumberOfRequestsAgainstOCLC") ?
+                Long.valueOf(this.configProperties.getProperty("totalNumberOfRequestsAgainstOCLC")) :
+                10;
+        System.out.println("number of defined requests: " + String.valueOf(numberRequestsAgainstAPI) + "\n");
+
+
+        while (sum < numberRequestsAgainstAPI) {
+
             for (SearchHit personHit : scrollResp.getHits().getHits()) {
 
-                i++;
+                if (sum >= numberRequestsAgainstAPI) {
+                    break;
+                }
+
                 MongoDocumentBuilder mongoDocBuilder = new MongoDocumentBuilder();
                 Document personMongoDoc =  mongoDocBuilder.jsonToDocument(personHit.getSourceAsString());
 
@@ -91,7 +101,6 @@ public class ScanPersonES1  extends ScanPerson {
 
                 String personId =  sourcemapPerson.containsKey("@id") ? (String) sourcemapPerson.get("@id") : null;
                 if (null != personId) {
-                    String qOclcApi = null;
 
                     String qTerm = this.prepareQuery(sourcemapPerson,personWithBirthYear);
 
@@ -139,7 +148,7 @@ public class ScanPersonES1  extends ScanPerson {
                                 .setQuery(q)
                                 .setSize(1000).execute().actionGet(); //100 hits per shard will be returned for each scroll
 
-                        ArrayList<Document> listResources = new ArrayList<>();
+                        ArrayList<Document> listResources = new ArrayList<Document>();
 
                         personMongoDoc.append("numberBibResources",String.valueOf(bibResourcesOfCurrentPerson.getHits().getTotalHits()) );
                         int maxNumberOfBibs = null != this.configProperties ?
@@ -174,17 +183,17 @@ public class ScanPersonES1  extends ScanPerson {
                     }
 
                 }
-
+                sum++;
             }
-            sum += i;
+
 
             scrollResp = client.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
-            if (scrollResp.getHits().getHits().length == 0) {
+            if (sum >=  numberRequestsAgainstAPI || scrollResp.getHits().getHits().length == 0) {
                 break;
             }
         }
 
-        System.out.println(sum);
+        System.out.println("number of requests against term API: " + String.valueOf(sum));
 
     }
 

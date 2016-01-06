@@ -1,12 +1,6 @@
 package org.swissbib.linked.oclc.entities;
 
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import org.bson.BasicBSONCallback;
-import org.bson.BasicBSONObject;
 import org.bson.Document;
-
-import java.util.Collection;
 
 
 /**
