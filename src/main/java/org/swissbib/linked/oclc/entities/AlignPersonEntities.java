@@ -3,7 +3,12 @@ package org.swissbib.linked.oclc.entities;
 //import org.elasticsearch.common.settings.ImmutableSettings;
 
 import java.io.*;
-        import java.util.Properties;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by swissbib on 12/28/15.
@@ -48,9 +53,7 @@ public class AlignPersonEntities {
             ScanPersonES1 personES1 = new ScanPersonES1();
             personES1.setAPI(oclcAPI);
 
-            personES1.init(configProps.getProperty("hostES"),
-                    Integer.valueOf(configProps.getProperty("portES")),
-                    configProps.getProperty("clusterName"));
+            personES1.init(configProps);
 
             MongoDBWrapper mDB = null;
 
@@ -132,7 +135,7 @@ public class AlignPersonEntities {
     private static boolean checkProperties(Properties props) {
 
         String[] manProps = new String[] {"hostES","portES","clusterName", "oclcKey", "hostMongo", "portMongo",
-        "mongoDataDB", "mongoAuthDB", "mongoDataCollection", "oclcRequestURL", "oclcIDURL" };
+        "mongoDataDB", "mongoAuthDB", "mongoDataCollection", "oclcRequestURL", "oclcIDURL","numberBibResources" };
 
         for (String prop: manProps) {
             if (!props.containsKey(prop)) {

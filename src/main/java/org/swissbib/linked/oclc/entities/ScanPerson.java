@@ -1,7 +1,11 @@
 package org.swissbib.linked.oclc.entities;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by swissbib on 12/29/15.
@@ -14,7 +18,11 @@ public abstract class ScanPerson  {
     protected String clustername = "linked-swissbib";
     protected APISearch api;
 
+    protected Pattern timeDiffPattern = Pattern.compile("PT-([0-9.]+)S");
+
     protected MongoDBWrapper mongoDBWrapper;
+
+    protected Properties configProperties = null;
 
 
 
@@ -44,9 +52,10 @@ public abstract class ScanPerson  {
                 Integer.valueOf(configProps.getProperty("portES")),
                 configProps.getProperty("clusterName"));
 
+        this.configProperties = configProps;
+
 
     }
-
 
 
     public void setAPI (APISearch api) {
@@ -80,5 +89,18 @@ public abstract class ScanPerson  {
 
 
     }
+
+
+
+    protected String getNumericTimeDifference(LocalDateTime dt1, LocalDateTime dt2 ) {
+
+        Duration duration =  Duration.between(dt2,dt1);
+
+        Matcher m =  timeDiffPattern.matcher(duration.toString());
+
+        return  m.find() ?  m.group(1) : duration.toString();
+
+    }
+
 
 }

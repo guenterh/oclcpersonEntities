@@ -19,6 +19,7 @@ import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -50,6 +51,10 @@ public class ScanPersonES1  extends ScanPerson {
     public void openScan () {
 
 
+        LocalDateTime dt1 = null;
+        LocalDateTime dt2 = null;
+        String timeDiff = null;
+
         ExistsFilterBuilder filter=FilterBuilders.existsFilter("dbp:birthYear");
         //QueryBuilder qb = QueryBuilders.filteredQuery(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("type", "Person")),filter);
         QueryBuilder qb = QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(),filter);
@@ -66,7 +71,7 @@ public class ScanPersonES1  extends ScanPerson {
                 .setQuery(qb)
                 .setSize(100).execute().actionGet(); //100 hits per shard will be returned for each scroll
         //Scroll until no hits are returned
-        long anzahl = scrollResp.getHits().getTotalHits();
+        //long anzahl = scrollResp.getHits().getTotalHits();
 
         scrollResp = client.prepareSearchScroll(scrollResp.getScrollId()).setScroll(new TimeValue(600000)).execute().actionGet();
         boolean personWithBirthYear = true;
@@ -92,9 +97,13 @@ public class ScanPersonES1  extends ScanPerson {
 
                     if (qTerm.length() > 0) {
                         //qOclcApi = (String)sourcemapPerson.get("rdfs:label");
+
+                        dt1 = LocalDateTime.now();
                         String response = this.api.executeSearch(qTerm,OCLCQueryType.termLookUp);
+                        dt2 = LocalDateTime.now();
 
                         Document oclcTermQueryMongoDoc =  mongoDocBuilder.jsonToDocument(response);
+                        oclcTermQueryMongoDoc.append("timeTermQuery",this.getNumericTimeDifference(dt1,dt2));
 
                         ArrayList<Document> resultList = (ArrayList<Document>) oclcTermQueryMongoDoc.get("result");
 
@@ -105,7 +114,11 @@ public class ScanPersonES1  extends ScanPerson {
 
                                     String oclcPersonID = itemDoc.getString("uri");
 
+                                    dt1 = LocalDateTime.now();
                                     String additionalIds = this.api.executeSearch(oclcPersonID, OCLCQueryType.idLookUp);
+                                    dt2 = LocalDateTime.now();
+                                    itemDoc.put("timeAddIds",this.getNumericTimeDifference(dt1,dt2));
+
                                     if (null != additionalIds) {
                                         Document bbAddIds = mongoDocBuilder.jsonToDocument(additionalIds);
                                         itemDoc.put("additionalIds", bbAddIds);
@@ -128,6 +141,11 @@ public class ScanPersonES1  extends ScanPerson {
 
                         ArrayList<Document> listResources = new ArrayList<>();
 
+                        personMongoDoc.append("numberBibResources",String.valueOf(bibResourcesOfCurrentPerson.getHits().getTotalHits()) );
+                        int maxNumberOfBibs = null != this.configProperties ?
+                                Integer.valueOf(this.configProperties.getProperty("numberBibResources")):
+                                5;
+                        int tempNumberDocs = 1;
                         for (SearchHit bibResource : bibResourcesOfCurrentPerson.getHits().getHits()) {
                             //String response = this.api.executeSearch(qOclcApi);
                             Document bibDocument = mongoDocBuilder.jsonToDocument(bibResource.getSourceAsString());
@@ -145,6 +163,7 @@ public class ScanPersonES1  extends ScanPerson {
                             }
                             listResources.add(bibDocument);
 
+                            if (++tempNumberDocs > maxNumberOfBibs) break;
 
                         }
 
