@@ -1,0 +1,209 @@
+{
+    "_id": "568df6f04b13a147275e41b3",
+    "@type": "http://xmlns.com/foaf/0.1/Person",
+    "@context": "http://data.swissbib.ch/person/context.jsonld",
+    "foaf:lastName": "Wang",
+    "foaf:firstName": "Zhenzhong",
+    "dbp:birthYear": "1957",
+    "@id": "http://data.swissbib.ch/person/c1d34cb8-629b-39e7-bbeb-4c8adfdcfc5e",
+    "rdfs:label": "Wang, Zhenzhong, 1957-",
+    "oclcMappings": {
+        "query": {
+            "q": "Wang Zhenzhong",
+            "wskey": "[our id]",
+            "size": "10"
+        },
+        "result": [
+            {
+                "uri": "http://worldcat.org/entity/person/id/2634195448",
+                "defaultLabel": "Zhenzhong Wang",
+                "birthDate": "1964-10-00",
+                "role": "Author",
+                "topic": "Civilization",
+                "score": "1563.0618",
+                "languageLabels": {
+                    "nl-NL": "Wang, Zhenzhong",
+                    "en-US": "Zhenzhong Wang",
+                    "de-DE": "Zhenzhong Wang",
+                    "fr-FR": "Zhenzhong Wang"
+                },
+                "alternateNames": [
+                    "Wang, Zhenzhong",
+                    "Zhenzhong Wang"
+                ],
+                "timeAddIds": "0.149",
+                "additionalIds": {
+                    "@id": "http://worldcat.org/entity/person/id/2634195448",
+                    "@context": "http://schema.org/",
+                    "sameAs": [
+                        "http://worldcat.org/entity/person/id/2634195448",
+                        "http://d-nb.info/gnd/1021407267",
+                        "http://www.idref.fr/117605883/id",
+                        "http://viaf.org/viaf/76001923",
+                        "http://data.bnf.fr/ark:/12148/cb14543503j#foaf:Person",
+                        "http://id.loc.gov/authorities/names/no2003037051",
+                        "http://isni.org/isni/0000000114618491"
+                    ]
+                }
+            },
+            {
+                "uri": "http://worldcat.org/entity/person/id/2628669327",
+                "defaultLabel": "Zhenzhong Wang",
+                "birthDate": "1949",
+                "role": "Author",
+                "topic": "Economic history",
+                "score": "320.44385",
+                "languageLabels": {"en-US": "Zhenzhong Wang"},
+                "alternateNames": ["Zhenzhong Wang"],
+                "timeAddIds": "0.15",
+                "additionalIds": {
+                    "@id": "http://worldcat.org/entity/person/id/2628669327",
+                    "@context": "http://schema.org/",
+                    "sameAs": [
+                        "http://id.loc.gov/authorities/names/nr2003020620",
+                        "http://isni.org/isni/0000000094010365",
+                        "http://worldcat.org/entity/person/id/2628669327",
+                        "http://viaf.org/viaf/63950948"
+                    ]
+                }
+            },
+            {
+                "uri": "http://worldcat.org/entity/person/id/2638060542",
+                "defaultLabel": "Zhenzhong Wang",
+                "role": "Author",
+                "topic": "Cotton manufacture",
+                "score": "194.16916",
+                "languageLabels": {
+                    "en-US": "Zhenzhong Wang",
+                    "ja-JP": "鎮中 王"
+                },
+                "alternateNames": [
+                    "鎮中 王",
+                    "Zhenzhong Wang"
+                ],
+                "timeAddIds": "0.15",
+                "additionalIds": {
+                    "@id": "http://worldcat.org/entity/person/id/2638060542",
+                    "@context": "http://schema.org/",
+                    "sameAs": [
+                        "http://www.idref.fr/134101111/id",
+                        "http://isni.org/isni/0000000026794583",
+                        "http://viaf.org/viaf/38308443",
+                        "http://id.ndl.go.jp/auth/entity/00358942",
+                        "http://worldcat.org/entity/person/id/2638060542",
+                        "http://id.loc.gov/authorities/names/n84027515"
+                    ]
+                }
+            },
+            {
+                "uri": "http://worldcat.org/entity/person/id/2629302099",
+                "defaultLabel": "Zhenzhong Wang",
+                "birthDate": "1957",
+                "role": "Author",
+                "topic": "Civilization",
+                "score": "165.0438",
+                "languageLabels": {"en-US": "Zhenzhong Wang"},
+                "alternateNames": ["Zhenzhong Wang"],
+                "timeAddIds": "0.154",
+                "additionalIds": {
+                    "@id": "http://worldcat.org/entity/person/id/2629302099",
+                    "@context": "http://schema.org/",
+                    "sameAs": [
+                        "http://worldcat.org/entity/person/id/2629302099",
+                        "http://id.loc.gov/authorities/names/nr2007012632",
+                        "http://viaf.org/viaf/24567842"
+                    ]
+                }
+            },
+            {
+                "uri": "http://worldcat.org/entity/person/id/2634209302",
+                "defaultLabel": "Zhenzhong Wang",
+                "birthDate": "1939",
+                "role": "Author",
+                "topic": "Language and languages--Style",
+                "score": "97.104195",
+                "languageLabels": {"en-US": "Zhenzhong Wang"},
+                "alternateNames": ["Zhenzhong Wang"],
+                "timeAddIds": "0.152",
+                "additionalIds": {
+                    "@id": "http://worldcat.org/entity/person/id/2634209302",
+                    "@context": "http://schema.org/",
+                    "sameAs": [
+                        "http://id.loc.gov/authorities/names/no2008038976",
+                        "http://viaf.org/viaf/61348034",
+                        "http://worldcat.org/entity/person/id/2634209302"
+                    ]
+                }
+            },
+            {
+                "uri": "http://worldcat.org/entity/person/id/2629542918",
+                "defaultLabel": "Wang, Zhenzhong",
+                "birthDate": "1900",
+                "role": "Author",
+                "topic": "Chinese poetry",
+                "score": "29.125374",
+                "languageLabels": {"nl-NL": "Wang, Zhenzhong"},
+                "alternateNames": ["Wang, Zhenzhong"],
+                "timeAddIds": "0.152",
+                "additionalIds": {
+                    "@id": "http://worldcat.org/entity/person/id/2629542918",
+                    "@context": "http://schema.org/",
+                    "sameAs": [
+                        "http://worldcat.org/entity/person/id/2629542918",
+                        "http://viaf.org/viaf/286517667"
+                    ]
+                }
+            }
+        ],
+        "timeTermQuery": "0.167"
+    },
+    "numberBibResources": "1",
+    "relatedBibResources": [{
+        "@type": "http://purl.org/dc/terms/BibliographicResource",
+        "@context": "http://data.swissbib.ch/resource/context.jsonld",
+        "@id": "http://data.swissbib.ch/resource/315904429",
+        "rdfs:isDefinedBy": {"@id": "http://data.swissbib.ch/resource/315904429/about"},
+        "dct:language": {"@id": "http://lexvo.org/id/iso639-3/zho"},
+        "rdau:P60163": {"@id": "http://sws.geonames.org/1814991/"},
+        "bibo:isbn13": "9787516117217",
+        "bibo:isbn10": "7516117218",
+        "dc:contributor": {"foaf:Person": {
+            "foaf:lastName": "Wang",
+            "foaf:firstName": "Zhenzhong",
+            "dbp:birthYear": "1957",
+            "@id": "http://data.swissbib.ch/person/c1d34cb8-629b-39e7-bbeb-4c8adfdcfc5e",
+            "rdfs:label": "Wang, Zhenzhong, 1957-"
+        }},
+        "bibo:edition": "Di 1 ban",
+        "rdau:P60333": "Beijing : Zhongguo shehui kexue, 2013",
+        "dc:format": "494 S : Ill., maps ; 24 cm",
+        "dct:bibliographicCitation": "Dangdai Zhongguo xuezhe daibiaozuo wenku",
+        "rdau:P60049": {"@id": "http://rdvocab.info/termList/RDAContentType/1020"},
+        "rdau:P60050": {"@id": "http://rdvocab.info/termList/RDAMediaType/1007"},
+        "rdf:type": {"@id": "http://purl.org/ontology/bibo/Book"},
+        "dct:issued": "2013",
+        "dct:title": "Zhongguo wenming qiyuan de bijiao yanjiu (zengding ben) / Wang Zhenzhong zhu",
+        "docForBib": {
+            "@type": "http://purl.org/ontology/bibo/document",
+            "@context": "http://data.swissbib.ch/document/context.jsonld",
+            "dct:issued": {
+                "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+                "@value": "2015-12-29T13:09:43.619Z"
+            },
+            "@id": "http://data.swissbib.ch/resource/315904429/about",
+            "foaf:primaryTopic": {"@id": "http://data.swissbib.ch/resource/315904429/about"},
+            "dct:modified": {
+                "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+                "@value": "2014-12-15T04:20:29+01:00"
+            },
+            "dct:contributor": [
+                "http://d-nb.info/gnd/1046905-9",
+                "http://data.swissbib.ch/agent/NEBIS"
+            ],
+            "bf:local": [
+                "OCoLC/844607695",
+                "NEBIS/010029352"
+            ]
+        }
+    }]
+}
