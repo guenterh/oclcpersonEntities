@@ -1,5 +1,6 @@
 package org.swissbib.linked.oclc.entities;
 
+import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.google.common.net.UrlEscapers;
 
@@ -81,7 +82,11 @@ public class OCLCPersonEntityAPI implements APISearch {
 
         } catch (IOException ioException) {
             ioException.printStackTrace();
+        } catch (Throwable th) {
+
+
         }
+
 
         return oclcResponse;
     }

@@ -2,3 +2,4 @@
 
 target
 config/config.properties
+es.scan.log

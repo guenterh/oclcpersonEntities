@@ -1,0 +1,28 @@
+Type "it" for more
+> db.swissbibEnriched.find({matchedNumberOfDocs: { $gte: 1 } }).count()
+4250
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $gte: 1 } }).count()
+4250
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $gte: 2 } }).count()
+259
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $gt: 1 } }).count()
+259
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $gt: 2 } }).count()
+30
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $gt: 3 } }).count()
+2
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $e: 1 } }).count()
+2016-01-11T22:22:15.124+0100 E QUERY    [thread1] Error: count failed: {
+	"waitedMS" : NumberLong(0),
+	"ok" : 0,
+	"errmsg" : "unknown operator: $e",
+	"code" : 2
+} :
+_getErrorWithCode@src/mongo/shell/utils.js:23:13
+DBQuery.prototype.count@src/mongo/shell/query.js:359:11
+@(shell):1:1
+
+> db.swissbibEnriched.find({"matchedNumberOfDocs": { $eq: 1 } }).count()
+3991
+> db.swissbibEnriched.find({}).count()
+4250

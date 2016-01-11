@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -33,6 +36,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 public class ScanPersonES1  extends ScanPerson {
 
     private TransportClient client;
+    private static final Logger logger = LogManager.getLogger(ScanPersonES1.class);
 
     @Override
     protected void connectToCluster() {
@@ -63,6 +67,10 @@ public class ScanPersonES1  extends ScanPerson {
 
         //qb =  QueryBuilders.matchAllQuery();
 
+
+
+        logger.info("dies ist ein Test");
+        logger.debug("noch ein Test");
         SearchResponse scrollResp = client.prepareSearch("testsb")
                 .setTypes("person")
                 .setSearchType(SearchType.SCAN)
@@ -83,6 +91,7 @@ public class ScanPersonES1  extends ScanPerson {
                 10;
         System.out.println("number of defined requests: " + String.valueOf(numberRequestsAgainstAPI) + "\n");
 
+        Pattern searchedPerson = Pattern.compile("Giovanni Battista", Pattern.CASE_INSENSITIVE);
 
         while (sum < numberRequestsAgainstAPI) {
 
@@ -107,79 +116,11 @@ public class ScanPersonES1  extends ScanPerson {
                     if (qTerm.length() > 0) {
                         //qOclcApi = (String)sourcemapPerson.get("rdfs:label");
 
-                        dt1 = LocalDateTime.now();
-                        String response = this.api.executeSearch(qTerm,OCLCQueryType.termLookUp);
-                        dt2 = LocalDateTime.now();
-
-                        Document oclcTermQueryMongoDoc =  mongoDocBuilder.jsonToDocument(response);
-                        oclcTermQueryMongoDoc.append("timeTermQuery",this.getNumericTimeDifference(dt1,dt2));
-
-                        ArrayList<Document> resultList = (ArrayList<Document>) oclcTermQueryMongoDoc.get("result");
-
-
-                        if (null != resultList) {
-                            for (Document itemDoc : resultList) {
-                                if (null != itemDoc.getString("uri")) {
-
-                                    String oclcPersonID = itemDoc.getString("uri");
-
-                                    dt1 = LocalDateTime.now();
-                                    String additionalIds = this.api.executeSearch(oclcPersonID, OCLCQueryType.idLookUp);
-                                    dt2 = LocalDateTime.now();
-                                    itemDoc.put("timeAddIds",this.getNumericTimeDifference(dt1,dt2));
-
-                                    if (null != additionalIds) {
-                                        Document bbAddIds = mongoDocBuilder.jsonToDocument(additionalIds);
-                                        itemDoc.put("additionalIds", bbAddIds);
-                                    }
-                                }
-                            }
-
-                        }
-                        personMongoDoc.append("oclcMappings",oclcTermQueryMongoDoc);
-
-
-                        QueryBuilder q =  QueryBuilders.matchQuery("dc:contributor.foaf:Person.@id", personId);
-
-                        SearchResponse bibResourcesOfCurrentPerson = client.prepareSearch("testsb")
-                                .setTypes("bibliographicResource")
-                                //.setSearchType(SearchType.)
-                                //.setScroll(new TimeValue(60000))
-                                .setQuery(q)
-                                .setSize(1000).execute().actionGet(); //100 hits per shard will be returned for each scroll
-
-                        ArrayList<Document> listResources = new ArrayList<Document>();
-
-                        personMongoDoc.append("numberBibResources",String.valueOf(bibResourcesOfCurrentPerson.getHits().getTotalHits()) );
-                        int maxNumberOfBibs = null != this.configProperties ?
-                                Integer.valueOf(this.configProperties.getProperty("numberBibResources")):
-                                5;
-                        int tempNumberDocs = 1;
-                        for (SearchHit bibResource : bibResourcesOfCurrentPerson.getHits().getHits()) {
-                            //String response = this.api.executeSearch(qOclcApi);
-                            Document bibDocument = mongoDocBuilder.jsonToDocument(bibResource.getSourceAsString());
-
-                            String bibId = bibResource.getId();
-
-
-                            GetResponse getResponse = client.prepareGet("testsb", "document", bibId)
-                                    .execute()
-                                    .actionGet();
-
-
-                            if (null != getResponse.getSourceAsString()) {
-                                bibDocument.append("docForBib", mongoDocBuilder.jsonToDocument(getResponse.getSourceAsString()));
-                            }
-                            listResources.add(bibDocument);
-
-                            if (++tempNumberDocs > maxNumberOfBibs) break;
-
+                        if (searchedPerson.matcher(qTerm).find()) {
+                            System.out.println();
                         }
 
 
-                        personMongoDoc.append("relatedBibResources",listResources);
-
-                        this.mongoDBWrapper.writeToDB(personMongoDoc);
                     }
 
                 }

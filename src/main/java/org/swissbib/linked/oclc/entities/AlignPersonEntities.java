@@ -25,7 +25,7 @@ public class AlignPersonEntities {
             Properties configProps = new Properties();
             configProps.load(fi);
 
-            if (!checkProperties(configProps)) {
+            if (!Utilities.checkProperties(configProps)) {
 
                 System.err.println("properties not correct");
                 System.exit(1);
@@ -40,24 +40,8 @@ public class AlignPersonEntities {
 
             personES1.init(configProps);
 
-            MongoDBWrapper mDB = null;
+            MongoDBWrapper mDB = Utilities.createMongoWrapper(configProps);
 
-            if (configProps.containsKey("mongoUser") && configProps.containsKey("mongoPassword")) {
-                mDB = new MongoDBWrapper(configProps.getProperty("hostMongo"),
-                        configProps.getProperty("portMongo"),
-                        configProps.getProperty("mongoDataDB"),
-                        configProps.getProperty("mongoDataCollection"),
-                        configProps.getProperty("mongoAuthDB"),
-                        configProps.getProperty("mongoUser"),
-                        configProps.getProperty("mongoPassword"));
-            } else {
-
-                mDB = new MongoDBWrapper(configProps.getProperty("hostMongo"),
-                        configProps.getProperty("portMongo"),
-                        configProps.getProperty("mongoDataDB"),
-                        configProps.getProperty("mongoDataCollection"),
-                        configProps.getProperty("mongoAuthDB"));
-            }
 
             personES1.setMongoWrapper(mDB);
 
@@ -65,7 +49,7 @@ public class AlignPersonEntities {
 
             personES1.disconnectFromCluster();
 
-
+            mDB.disConnectDB();
 
 
 
@@ -117,20 +101,5 @@ public class AlignPersonEntities {
     }
 
 
-    private static boolean checkProperties(Properties props) {
-
-        String[] manProps = new String[] {"hostES","portES","clusterName", "oclcKey", "hostMongo", "portMongo",
-        "mongoDataDB", "mongoAuthDB", "mongoDataCollection", "oclcRequestURL", "oclcIDURL","numberBibResources" };
-
-        for (String prop: manProps) {
-            if (!props.containsKey(prop)) {
-                System.err.println("property " + prop + " is missing");
-                return false;
-            }
-        }
-
-        return true;
-
-    }
 
 }
